@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 import json
+from core.classes import Cog_Extension
+import os
 
 #Discord.py 1.5 新增Intents selective receive event
 #https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
@@ -17,6 +19,8 @@ bot = commands.Bot(command_prefix='#',intents = intents)
 @bot.event
 #協程 def
 async def on_ready():
+    channel = bot.get_channel(int(jdata['Bot_channel']))
+    await channel.send('OuO Bot is now Online')
     print("\\OuO Bot is online/")
 
 @bot.event
@@ -32,14 +36,17 @@ async def on_member_remove(member):
     await channel.send(f'{member} Leaved...')
     print(f"{member} Leaved...")
 
+for filename in os.listdir('./cmds'):
+    if filename.endswith('.py'):
+        #filename[:-3] 省略後三字 (.py)
+        bot.load_extension(f'cmds.{filename[:-3]}')
+        print(f'Imported {filename}!')
 
-@bot.command()
-#ctx = context (上下文)
-#A:(上文) (user, id, user current server, user channel)
-#latency is float in second
-async def ping(ctx):
-    await ctx.send(f'{round(bot.latency*1000)} (ms)')
+#???
+if __name__ == "__main__":
+    bot.run(jdata['TOKEN'])
+
 
 #Inside Json, the arrengement of data is 字典的型態
 #every data have a corrspond key
-bot.run(jdata['TOKEN'])
+#bot.run(jdata['TOKEN'])
