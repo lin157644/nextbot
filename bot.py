@@ -13,7 +13,7 @@ with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 #Build Entity
-bot = commands.Bot(command_prefix='#',intents = intents)
+bot = commands.Bot(command_prefix='$',intents = intents)
 
 #Bot Ready
 #不用加()

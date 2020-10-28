@@ -4,7 +4,7 @@ from core.classes import Cog_Extension
 import json
 import random
 
-with open('C:\\Users\\linxs\\Desktop\\Project\\Github\\ouobot\\setting.json', 'r', encoding='utf8') as jfile:
+with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 intents = discord.Intents.all()
@@ -31,12 +31,20 @@ class Event(Cog_Extension):
     
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if msg.content == 'hi':
+        #可以拿去json儲存
+        keyword = ['apple','pen','abc']
+        #self.bot.user
+        #這裡傳入的msg是一個class
+        if msg.content == 'hi' and msg.author != self.bot.user:
             await msg.channel.send(random.choice(jdata['hi']))
         
         #end'string'with
         if msg.content.endswith('hello'):
             await msg.channel.send(random.choice(jdata['hi']))
+
+        #Keyword
+        if msg.content in keyword and msg.author != self.bot.user:
+            await msg.channel.send('Keyword!')
 
 def setup(bot):
     bot.add_cog(Event(bot))
