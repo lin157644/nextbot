@@ -46,5 +46,10 @@ class Event(Cog_Extension):
         if msg.content in keyword and msg.author != self.bot.user:
             await msg.channel.send('Keyword!')
 
+        if msg.content.rfind('滿漢大餐珍味牛肉麵') !=-1 and msg.author != self.bot.user and msg.channel.id == 776006936801443850:
+            if msg.author.id != 231851511704059904 or 376687088705470464:
+                await msg.author.kick(reason='滿漢大餐珍味牛肉麵')
+
+
 def setup(bot):
     bot.add_cog(Event(bot))

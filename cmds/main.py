@@ -56,7 +56,7 @@ class Main(Cog_Extension):
     
 
 
-#先
+#load_extension的entry point
 #註冊類別
 #傳入body的bot的bot??
 def setup(bot):
