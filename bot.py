@@ -3,7 +3,10 @@ from discord.ext import commands
 import json
 from core.classes import Cog_Extension
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+TOKEN=os.getenv('DISCORD_TOKEN')
 #Discord.py 1.5 新增Intents selective receive event
 #https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
 intents = discord.Intents.all()
@@ -61,6 +64,6 @@ for filename in os.listdir('./cmds'):
 #但若該檔案是(透過命令列)直接執行，其值會是 __main__
 #所以好像不必要???
 if __name__ == "__main__":
-    bot.run(jdata['TOKEN'])
+    bot.run(TOKEN)
 
 
