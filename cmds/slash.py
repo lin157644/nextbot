@@ -1,4 +1,6 @@
 import discord
+import os
+from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import cog_ext
 from discord_slash import SlashCommand
@@ -6,6 +8,12 @@ from discord_slash import SlashContext
 from discord_slash import http
 from discord_slash import utils
 
+
+
+load_dotenv()
+TOKEN=os.getenv('DISCORD_TOKEN')
+BOT_ID=os.getenv('PUBLIC_KEY')
+GUILD_ID=os.getenv('GUILD_ID')
 
 class Slash(commands.Cog):
     def __init__(self, bot):
@@ -25,19 +33,36 @@ class Slash(commands.Cog):
     #     "options": []
     # }
     # await http.SlashCommandRequest.post(resp, bot_id, interaction_id, token, initial=True)
+    # await http.SlashCommandRequest.post(resp, bot_id, interaction_id, token, initial=True)
+    # @commands.command()
+    # async def add_slash(self, ctx):
+    #     await 
+
     @commands.command()
-    async def add_slash(self, ctx):
-        bot_id = 770143431770505238
-        bot_token = 'NzcwMTQzNDMxNzcwNTA1MjM4.X5ZR9g.9C_R182qfRJ3FMLUhWrOoS458ms'
-        guild_id = 231851662761918464
-        print("1")
-        await utils.manage_commands.add_slash_command(bot_id, bot_token, guild_id, 'test', 'test')
-        print("2")
-    
+    async def add_commands(self, ctx):
+        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'say', 'say')
+        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'test', 'test')
+        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'ping', 'ping')
+
+
     @cog_ext.cog_slash(name="test")
     async def _test(self, ctx: SlashContext):
         embed = discord.Embed(title="embed test")
         await ctx.send(content="test", embeds=[embed])
+    
+    @cog_ext.cog_slash(name="ping")
+    async def ping(self, ctx: SlashContext):
+        await ctx.send(content="Pong!")
+    
+    # @cog_ext.cog_slash(name="say")
+    # async def say(self, ctx: SlashContext):
+    #     #這裡傳入的msg是str
+    #     await ctx.message.delete()
+    #     await SlashContext.send(contents='say')
+    
+    @cog_ext.cog_slash(name="say")
+    async def say(self, ctx: SlashContext, text: str):
+        await ctx.send(content=text)
 
 
 def setup(bot):
