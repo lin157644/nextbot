@@ -45,10 +45,34 @@ class Event(Cog_Extension):
         #Keyword
         if msg.content in keyword and msg.author != self.bot.user:
             await msg.channel.send('Keyword!')
-
+        
+        
         if msg.content.rfind('滿漢大餐珍味牛肉麵') !=-1 and msg.author != self.bot.user and msg.channel.id == 776006936801443850:
             if msg.author.id != 231851511704059904 or 376687088705470464:
                 await msg.author.kick(reason='滿漢大餐珍味牛肉麵')
+                await msg.channel.send(f'已處決『{msg.author.name}』')
+
+        keyword_kick = ['滿', '漢', '大', '餐', '珍', '味', '牛', '肉', '麵']
+        # if msg.author != self.bot.user and msg.channel.id == 776006936801443850:
+        #     if msg.author.id != 231851511704059904 or 376687088705470464:
+        #       keyword_count = 0
+        #       for i in keyword_kick:
+        #         if msg.content.find(i) != -1:
+        #           keyword_count += 1
+        #       if keyword_count >= 9:
+        #         await msg.author.kick(reason='滿漢大餐珍味牛肉麵')
+        #         await msg.channel.send(f'已處決『{msg.author.name}』')
+        
+
+        if msg.author != self.bot.user :
+            if msg.author.id not in jdata['ignore'] :
+              keyword_count = 0
+              for i in keyword_kick:
+                if msg.content.find(i) != -1:
+                  keyword_count += 1
+              if keyword_count >= 9:
+                await msg.author.kick(reason='滿漢大餐珍味牛肉麵')
+                await msg.channel.send(f'已處決『{msg.author.name}』')
 
 
 def setup(bot):

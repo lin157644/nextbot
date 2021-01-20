@@ -54,8 +54,6 @@ class Main(Cog_Extension):
         #記得加一
         await ctx.channel.purge(limit=num+1)
     
-
-
 #load_extension的entry point
 #註冊類別
 #傳入body的bot的bot??
