@@ -1,6 +1,6 @@
 # import keep_alive
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import json
 import os
 from dotenv import load_dotenv
@@ -57,6 +57,7 @@ for filename in os.listdir('./cmds'):
         #filename[:-3] 省略後三字 (.py)
         bot.load_extension(f'cmds.{filename[:-3]}')
         print(f'Imported {filename}!')
+
 
 
 #Inside Json, the arrengement of data is 字典的型態

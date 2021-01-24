@@ -1,4 +1,5 @@
 import discord
+from discord.embeds import Embed
 from discord.ext import commands
 from core.classes import Cog_Extension
 import datetime
@@ -12,8 +13,8 @@ class Main(Cog_Extension):
     #ctx = context (上下文)
     #A:(上文) (user, id, user current server, user channel)
     #latency is float in second
-    async def ping(self, ctx):
-        await ctx.send(f'{round(self.bot.latency*1000)} (ms)')
+    async def ping(self, ccc):
+        await ccc.send(f'{round(self.bot.latency*1000)} (ms)')
     
     @commands.command()
     async def embedtest(self, ctx):
@@ -30,16 +31,18 @@ class Main(Cog_Extension):
     @commands.command()
     async def embed(self, ctx, *, msg):
         jfile=json.loads(msg)
-        embed=discord.Embed(title=jfile["title"], url=jfile["url"], color=int(jfile["color"]), timestamp=datetime.datetime.now())
-        embed.set_author(name=jfile['author']['name'], url=jfile['author']['icon_url'], icon_url=jfile['author']['icon_url'])
-        embed.set_thumbnail(url=jfile['thumbnail'])
-        embed.set_image(url=jfile['image'])
-        for i in range(len(jfile['fields'])):
-            embed.add_field(name=jfile['fields'][i]['name'], value=jfile['fields'][i]['name'], inline=jfile['fields'][i]['inline'])
-        #embed.add_field(name=jfile[''], value=jfile[''], inline=True)
-        #embed.add_field(name=jfile[''], value=jfile[''], inline=True)
-        embed.set_footer(text=jfile['footer']['text'], icon_url=jfile['footer']['icon_url'])
-        await ctx.send(embed=embed)
+        embed=discord.Embed(title=jfile.get("title"), url=jfile.get("url", ""), color=jfile.get("color", 5198940), timestamp=datetime.datetime.now())
+        if "author" in jfile:
+            embed.set_author(name=jfile.get("author").get("name"), url=jfile.get("author").get("url", ""), icon_url=jfile.get("author").get("icon_url", ""))
+        if "thumbnail" in jfile:
+            embed.set_thumbnail(url=jfile.get("thumbnail"))
+        if "image" in jfile:
+            embed.set_image(url=jfile.get("image"))
+        for i in jfile.get("fields"):
+            embed.add_field(name=i.get("name"), value=i.get("value"), inline=i.get("inline"))
+        if "footer" in jfile:
+            embed.set_footer(text=jfile.get("footer").get("text"), icon_url=jfile.get("footer").get("icon_url", ""))
+        await ctx.send(context="",embed=embed)
     
     @commands.command()
     #*,msg代表 不管之後有幾個argument都視為msg
