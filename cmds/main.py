@@ -13,8 +13,8 @@ class Main(Cog_Extension):
     #ctx = context (上下文)
     #A:(上文) (user, id, user current server, user channel)
     #latency is float in second
-    async def ping(self, ccc):
-        await ccc.send(f'{round(self.bot.latency*1000)} (ms)')
+    async def ping(self, ctx):
+        await ctx.send(f'{round(self.bot.latency*1000)} (ms)')
     
     @commands.command()
     async def embedtest(self, ctx):
