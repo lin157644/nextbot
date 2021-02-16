@@ -17,7 +17,7 @@ class Task(Cog_Extension):
             self.channel = self.bot.get_channel(770144271503720469)
             print('good')
             while not self.bot.is_closed():
-                await self.channel.send(f'現在時間:{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+                # await self.channel.send(f'現在時間:{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                 await asyncio.sleep(10)
         
         self.bg_task = self.bot.loop.create_task(interval())

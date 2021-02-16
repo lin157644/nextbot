@@ -20,8 +20,10 @@ class React(Cog_Extension):
         await ctx.send(file = pic)
     
     @commands.command()
-    async def urlpic(self, ctx):
-        await ctx.send(jdata['urlpic'])
+    async def urlpic(self, ctx, url):
+        # await ctx.send(jdata['urlpic'])
+        await ctx.message.delete()
+        await ctx.send(url)
 
 def setup(bot):
     bot.add_cog(React(bot))

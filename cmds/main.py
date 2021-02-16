@@ -4,6 +4,8 @@ from discord.ext import commands
 from core.classes import Cog_Extension
 import datetime
 import json
+import random
+
 
 #後
 #main 繼承commands.cog類別
@@ -57,6 +59,58 @@ class Main(Cog_Extension):
         #記得加一
         await ctx.channel.purge(limit=num+1)
     
+    @commands.command()
+    async def kick(self, ctx, msg):
+        # member = discord.utils.find(lambda m: m.name == ctx, self.channel.guild.members)
+        if ctx.author == ctx.guild.owner:
+          member = discord.utils.get(ctx.guild.members, name=msg)
+          try:
+            await discord.Member.kick(member, reason='Test')
+            await ctx.send(f'已處決『{msg}』')
+          except:
+              await ctx.send('Kick Fail QQ')
+    
+    @commands.command()
+    async def tpall(self, ctx, cha:int):
+        voice_channel = self.bot.get_channel(cha)
+        members = ctx.guild.members
+        for ppl in members:
+            await ppl.move_to(voice_channel)
+        await self.bot.move_member(members, voice_channel)
+    
+    @commands.command()
+    async def ban(self, ctx, sinner:int):
+        sinner = ctx.guild.get_member(sinner)
+        if ctx.author == ctx.guild.owner:
+          await sinner.ban(reason='Bad')
+          await ctx.send(f'已處決『{sinner.name}』')
+    
+    @commands.command()
+    async def 猜拳(self, ctx, msg):
+        win = random.choice(0, 1, 2)
+        if msg == '剪刀':
+            if win == 0:
+                ctx.send('布 您贏了')
+            elif win == 1:
+                ctx.send('剪刀 平手')
+            else:
+                ctx.send('石頭 您輸了')
+        if msg == '石頭':
+            if win == 0:
+                ctx.send('剪刀 您贏了')
+            elif win == 1:
+                ctx.send('石頭 平手')
+            else:
+                ctx.send('布 您輸了')
+        if msg == '布':
+            if win == 0:
+                ctx.send('石頭 您贏了')
+            elif win == 1:
+                ctx.send('布 平手')
+            else:
+                ctx.send('剪刀 您輸了')
+
+
 #load_extension的entry point
 #註冊類別
 #傳入body的bot的bot??
