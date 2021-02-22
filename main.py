@@ -29,42 +29,36 @@ async def on_ready():
     await channel.send('OuO Bot is now Online')
     print("\\OuO Bot is online/")
 
-#load
 @bot.command()
 async def load(ctx, extension):
     bot.load_extension(f'cmds.{extension}')
     print(f'Extension {extension} Loaded!')
     await ctx.send(F'Extension {extension} Loaded!')
 
-#unload
 @bot.command()
 async def unload(ctx, extension):
     bot.unload_extension(f'cmds.{extension}')
     print(f'Extension {extension} Unloaded!')
     await ctx.send(F'Extension {extension} Unloaded!')
 
-#relaod
 @bot.command()
 async def reload(ctx, extension):
     bot.reload_extension(f'cmds.{extension}')
     print(f'Extension {extension} Reloaded!')
     await ctx.send(F'Extension {extension} Reloaded!')
 
-
-#load default extension
+#Load Default Extension
 for filename in os.listdir('./cmds'):
     if filename.endswith('.py') and not(filename.startswith('__')):
         #filename[:-3] 省略後三字 (.py)
         bot.load_extension(f'cmds.{filename[:-3]}')
         print(f'Imported {filename}!')
 
+#Inside Json, the arrengement of data is in the form of dictionary
+#Which means every data have a corrspond key
 
-
-#Inside Json, the arrengement of data is 字典的型態
-#every data have a corrspond key
 #__name__如果該檔案是被引用，其值會是模組名稱；
 #但若該檔案是(透過命令列)直接執行，其值會是 __main__
-#所以好像不必要???
 if __name__ == "__main__":
     # keep_alive.keep_alive()
     bot.run(TOKEN)

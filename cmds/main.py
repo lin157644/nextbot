@@ -87,26 +87,26 @@ class Main(Cog_Extension):
     
     @commands.command()
     async def 猜拳(self, ctx, msg):
-        win = random.choice(0, 1, 2)
+        win = random.choice([0, 1, 2])
         if msg == '剪刀':
             if win == 0:
-                ctx.send('布 您贏了')
+                ctx.send(ctx.author.mention+'布 您贏了')
             elif win == 1:
-                ctx.send('剪刀 平手')
+                ctx.send(ctx.author.mention+'剪刀 平手')
             else:
-                ctx.send('石頭 您輸了')
+                ctx.send(ctx.author.mention+'石頭 您輸了')
         if msg == '石頭':
             if win == 0:
-                ctx.send('剪刀 您贏了')
+                ctx.send(ctx.author.mention+'剪刀 您贏了')
             elif win == 1:
-                ctx.send('石頭 平手')
+                ctx.send(ctx.author.mention+'石頭 平手')
             else:
-                ctx.send('布 您輸了')
+                ctx.send(ctx.author.mention+'布 您輸了')
         if msg == '布':
             if win == 0:
-                ctx.send('石頭 您贏了')
+                ctx.send(ctx.author.mention+'石頭 您贏了')
             elif win == 1:
-                ctx.send('布 平手')
+                ctx.send(ctx.author.mention+'布 平手')
             else:
                 ctx.send('剪刀 您輸了')
 

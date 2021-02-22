@@ -41,7 +41,7 @@ class Music(Cog_Extension):
             if file.endswith('.mp3'):
                 os.rename(file, 'song.mp3')
         
-        voice.play(discord.FFmpegPCMAudio('song.mp3'))
+        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3')))
 
     
     @commands.command()
@@ -74,9 +74,18 @@ class Music(Cog_Extension):
         voice.stop()
     
     @commands.command()
-    async def volume(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3'), volume=0.5)
+    async def volume(self, ctx, vol:float):
+        volume = max(0.0, min(1.0, vol / 100))
+
+        source = ctx.guild.voice_client.source
+
+        # if not isinstance(source, discord.PCMVolumeTransformer):
+        #     return await ctx.send("This source doesn't support adjusting volume or "
+        #                           "the interface to do so is not exposed.")
+
+        source.volume = volume
+
+        await ctx.send(f"音量:{volume * 100:.2f}%")
 
 def setup(bot):
     bot.add_cog(Music(bot))
