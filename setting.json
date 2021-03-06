@@ -1,6 +1,6 @@
 {
     "Bot_channel":"770144271503720469",
-    "Dir_random_pic":["file\\testpic.png","file\\testpic2.jng"],
+    "Dir_random_pic":["files\\testpic.png","files\\testpic2.jng"],
     "urlpic":"https://i.ytimg.com/vi/P0a7o5hK_Ig/hqdefault.jpg?sqp=-oaymwEYCKgBEF5IVfKriqkDCwgBFQAAiEIYAXAB&rs=AOn4CLBRS_4gfw95zN50PNLq9yj10YK6rw",
     "hi":["hey","hi2","hellO"],
     "ignore":[231851511704059904, 376687088705470464],
