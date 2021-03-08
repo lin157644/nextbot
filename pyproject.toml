@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "ouobot"
+version = "1.0.0"
+description = "An Python based Discord bot project for the purpose of studying."
+authors = ["SeanLin <linxs1010@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9.2"
+"discord.py" = {extras = ["voice"], version = "^1.6.0"}
+youtube_dl = "^2021.3.3"
+Pillow = "^8.1.2"
+discord-py-slash-command = "^1.0.9"
