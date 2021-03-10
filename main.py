@@ -1,13 +1,16 @@
 # import keep_alive
-import discord
-from discord.ext import commands, tasks
 import json
 import os
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand
 from dotenv import load_dotenv
+
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
 BOT_ID=os.getenv('PUBLIC_KEY')
 GUILD_ID=os.getenv('GUILD_ID')
+BOT_PUBLIC_KEY = os.getenv('PUBLIC_KEY')
 
 #Discord.py 1.5 新增Intents selective receive event
 #https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
@@ -19,11 +22,10 @@ with open('setting.json', 'r', encoding='utf8') as jfile:
 
 #Build Entity
 bot = commands.Bot(command_prefix='$',intents = intents)
+slash = SlashCommand(bot, override_type = True)
 
 #Bot Ready
-#不用加()
 @bot.event
-#協程 def
 async def on_ready():
     channel = bot.get_channel(int(jdata['Bot_channel']))
     await channel.send('OuO Bot is now Online')
@@ -56,9 +58,6 @@ for filename in os.listdir('./cmds'):
 
 #Inside Json, the arrengement of data is in the form of dictionary
 #Which means every data have a corrspond key
-
-#__name__如果該檔案是被引用，其值會是模組名稱；
-#但若該檔案是(透過命令列)直接執行，其值會是 __main__
 if __name__ == "__main__":
     # keep_alive.keep_alive()
     bot.run(TOKEN)

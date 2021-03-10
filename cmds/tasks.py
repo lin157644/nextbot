@@ -1,9 +1,7 @@
-# coding=utf-8
+import json, asyncio, datetime
 import discord
 from discord.ext import tasks, commands
 from core.classes import Cog_Extension
-import json, asyncio, datetime
-
 
 class Task(Cog_Extension):
     def __init__(self, *args, **kwargs):

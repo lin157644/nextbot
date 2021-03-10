@@ -1,11 +1,8 @@
+import json
+import random
 import discord
 from discord.ext import commands
 from core.classes import Cog_Extension
-import json
-import random
-
-#1.5後的Discord.py使用intent以減低listen負擔
-intents = discord.Intents.all()
 
 with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)

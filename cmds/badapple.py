@@ -1,10 +1,8 @@
+import asyncio, datetime
 import discord
-from PIL import Image
-import time
 from discord.ext import commands
 from core.classes import Cog_Extension
-import asyncio
-import datetime
+from PIL import Image
 
 class Badapple(Cog_Extension):
 

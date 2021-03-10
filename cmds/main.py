@@ -1,21 +1,16 @@
+import datetime, json, random
 import discord
 from discord.embeds import Embed
 from discord.ext import commands
 from core.classes import Cog_Extension
-import datetime
-import json
-import random
 
-
-#後
-#main 繼承commands.cog類別
+#Main 繼承commands.cog類別
 class Main(Cog_Extension):
     
     @commands.command()
     #ctx = context (上下文)
-    #A:(上文) (user, id, user current server, user channel)
-    #latency is float in second
     async def ping(self, ctx):
+        #latency is float in second
         await ctx.send(f'{round(self.bot.latency*1000)} (ms)')
     
     @commands.command()
@@ -110,10 +105,7 @@ class Main(Cog_Extension):
             else:
                 ctx.send('剪刀 您輸了')
 
-
-#load_extension的entry point
-#註冊類別
-#傳入body的bot的bot??
+#load_extension entry point
 def setup(bot):
     bot.add_cog(Main(bot))
 

@@ -1,68 +1,39 @@
+import os, json
 import discord
-import os
-from dotenv import load_dotenv
 from discord.ext import commands
+from core.classes import Cog_Extension
+from dotenv import load_dotenv
 from discord_slash import cog_ext
-from discord_slash import SlashCommand
-from discord_slash import SlashContext
-from discord_slash import utils
-
-
+from discord_slash.model import SlashCommandOptionType
+from discord_slash.utils.manage_commands import create_option
 
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
 BOT_ID=os.getenv('PUBLIC_KEY')
 GUILD_ID=os.getenv('GUILD_ID')
 
-class Slash(commands.Cog):
-    def __init__(self, bot):
-        if not hasattr(bot, "slash"):
-            # Creates new SlashCommand instance to bot if bot doesn't have.
-            bot.slash = SlashCommand(bot, override_type=True)
-        self.bot = bot
-        self.bot.slash.get_cog_commands(self)
-        
+class Slash(Cog_Extension):
 
-    def cog_unload(self):
-        self.bot.slash.remove_cog_commands(self)
-
-    # resp = {
-    #     "name": "test",
-    #     "description": "Send a embed test",
-    #     "options": []
-    # }
-    # await http.SlashCommandRequest.post(resp, bot_id, interaction_id, token, initial=True)
-    # await http.SlashCommandRequest.post(resp, bot_id, interaction_id, token, initial=True)
-    # @commands.command()
-    # async def add_slash(self, ctx):
-    #     await 
-
-    @commands.command()
-    async def add_commands(self, ctx):
-        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'say', 'say')
-        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'test', 'test')
-        await utils.manage_commands.add_slash_command(770143431770505238, TOKEN, GUILD_ID, 'ping', 'ping')
-
-
-    @cog_ext.cog_slash(name="test")
-    async def _test(self, ctx: SlashContext):
-        embed = discord.Embed(title="embed test")
-        await ctx.send(content="test", embeds=[embed])
+    guild_ids = [231851662761918464]
     
-    @cog_ext.cog_slash(name="ping")
-    async def ping(self, ctx: SlashContext):
-        await ctx.send(content="Pong!")
+    @cog_ext.cog_slash(name="ping", description="This is just a test command, nothing more.", guild_ids=guild_ids)
+    async def ping(self, ctx):
+        await ctx.respond()
+        await ctx.send(f"Pong! ({self.bot.latency*1000}ms)")
     
-    # @cog_ext.cog_slash(name="say")
-    # async def say(self, ctx: SlashContext):
-    #     #這裡傳入的msg是str
-    #     await ctx.message.delete()
-    #     await SlashContext.send(contents='say')
-    
-    @cog_ext.cog_slash(name="say")
-    async def say(self, ctx: SlashContext, text: str):
-        await ctx.send(content=text)
-
+    @cog_ext.cog_slash(name="test",
+                description="This is just a test command, nothing more.",
+                options=[
+                create_option(
+                    name="optone",
+                    description="This is the first option we have.",
+                    option_type=3,
+                    required=False
+                )
+                ])
+    async def test(self, ctx, optone: str):
+        await ctx.respond()
+        await ctx.send(content=f"I got you, you said {optone}!")
 
 def setup(bot):
     bot.add_cog(Slash(bot))

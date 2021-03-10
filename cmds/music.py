@@ -15,16 +15,13 @@ class Music(Cog_Extension):
         except PermissionError:
             await ctx.send('請等待當前撥放歌曲結束')
             return
-
         
         voiceChannel = ctx.author.voice.channel     
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice == None:
             await voiceChannel.connect()
             voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-            
         
-
         ydl_opts = {
             'format' : 'bestaudio/best',
             'postprocessors':[{
@@ -44,8 +41,8 @@ class Music(Cog_Extension):
         voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3')))
 
     
-    @commands.command()
-    async def fuckoff(self, ctx):
+    @commands.command(aliases=['fuckoff', 'quit'])
+    async def leave(self, ctx):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_connected():
             await voice.disconnect()
