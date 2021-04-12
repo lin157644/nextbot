@@ -22,23 +22,27 @@ class Music(Cog_Extension):
             await voiceChannel.connect()
             voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         
-        ydl_opts = {
-            'format' : 'bestaudio/best',
-            'postprocessors':[{
-                'key' : 'FFmpegExtractAudio',
-                'preferredcodec' : 'mp3',
-                'preferredquality' : '192'
-            }]
-        }
-        
+        # ydl_opts = {
+        #     'format' : 'bestaudio/best',
+        #     'postprocessors':[{
+        #         'key' : 'FFmpegExtractAudio',
+        #         'preferredcodec' : 'mp3',
+        #         'preferredquality' : '192'
+        #     }]
+        # }
+        ydl_opts = {'format' : 'bestaudio/best'}
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            # ydl.download([url])
+            info = ydl.extract_info(url, download=False)
+            URL = info['formats'][0]['url']
         
-        for file in os.listdir("./"):
-            if file.endswith('.mp3'):
-                os.rename(file, 'song.mp3')
+        # for file in os.listdir("./"):
+        #     if file.endswith('.mp3'):
+        #         os.rename(file, 'song.mp3')
         
-        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3')))
+        # voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3')))
+        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)))
 
     
     @commands.command(aliases=['fuckoff', 'quit'])

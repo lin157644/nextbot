@@ -22,7 +22,7 @@ with open('setting.json', 'r', encoding='utf8') as jfile:
 
 #Build Entity
 bot = commands.Bot(command_prefix='$',intents = intents)
-slash = SlashCommand(bot, override_type = True)
+slash = SlashCommand(bot, override_type = True, sync_commands=True)
 
 #Bot Ready
 @bot.event
