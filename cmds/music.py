@@ -1,59 +1,83 @@
-import discord
-from discord.ext import commands
-from core.classes import Cog_Extension
+import discord, datetime
 import os
 import youtube_dl
+from core.classes import Cog_Extension
+from dotenv import load_dotenv
+from discord_slash import cog_ext
+from discord_slash.utils.manage_commands import create_option, create_choice
+
+load_dotenv()
+GUILD_ID=os.getenv('GUILD_ID')
 
 class Music(Cog_Extension):    
 
-    @commands.command()
+    guild_ids = [231851662761918464]
+
+    @cog_ext.cog_slash(name="play",
+        description="Play Music",
+        options=[
+        create_option(
+            name="platform",
+            description="請輸入要播放的平台",
+            option_type=4,
+            required=True,
+            choices=[
+                create_choice(
+                    name='Youtube',
+                    value=1
+                ),
+                create_choice(
+                    name='Pornhub',
+                    value=1
+                )
+            ]
+        ),
+        create_option(
+            name="url",
+            description="請輸入要播放的網址",
+            option_type=3,
+            required=True
+        )
+        ],
+        guild_ids=guild_ids)
     async def play(self, ctx, url:str):
-        songExist = os.path.isfile("song.mp3")
-        try:
-            if songExist:
-                os.remove('song.mp3')
-        except PermissionError:
-            await ctx.send('請等待當前撥放歌曲結束')
-            return
-        
+
+        await ctx.defer()
+
+        # Connect to Current voice channel
         voiceChannel = ctx.author.voice.channel     
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice == None:
             await voiceChannel.connect()
             voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        
-        # ydl_opts = {
-        #     'format' : 'bestaudio/best',
-        #     'postprocessors':[{
-        #         'key' : 'FFmpegExtractAudio',
-        #         'preferredcodec' : 'mp3',
-        #         'preferredquality' : '192'
-        #     }]
-        # }
-        ydl_opts = {'format' : 'bestaudio/best'}
+
+        # Downlaod info
+        ydl_opts = {'format' : 'bestaudio/best', 'get-thumbnail' : 'true'}
         FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            # ydl.download([url])
             info = ydl.extract_info(url, download=False)
             URL = info['formats'][0]['url']
         
-        # for file in os.listdir("./"):
-        #     if file.endswith('.mp3'):
-        #         os.rename(file, 'song.mp3')
-        
-        # voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio('song.mp3')))
-        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)))
+        # Respond
+        try:
+            embed=discord.Embed(title="正在播放: \n"+info['title'], url="", color=0x575757, timestamp=datetime.datetime.now())
+            embed.set_thumbnail(url=info['thumbnails'][-1]['url'])
+            await ctx.send("", embed=embed)
+        except:
+            await ctx.send("Fail QQ")
 
+        # Play
+        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)))
     
-    @commands.command(aliases=['fuckoff', 'quit'])
-    async def leave(self, ctx):
+    @cog_ext.cog_slash(name="disconnect", description="讓機器人從當前的語音頻道中退出", guild_ids=guild_ids)
+    async def disconnect(self, ctx):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_connected():
             await voice.disconnect()
         else:
             await ctx.send("未連接至語音頻道")
     
-    @commands.command()
+    @cog_ext.cog_slash(name="pause", description="暫停當前播放的音樂", guild_ids=guild_ids)
     async def pause(self, ctx):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_playing():
@@ -61,7 +85,7 @@ class Music(Cog_Extension):
         else:
             await ctx.send("")
     
-    @commands.command()
+    @cog_ext.cog_slash(name="resume", description="繼續播放當前的音樂", guild_ids=guild_ids)
     async def resume(self, ctx):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         if voice.is_paused():
@@ -69,24 +93,19 @@ class Music(Cog_Extension):
         else:
             await ctx.send("")
     
-    @commands.command()
+    @cog_ext.cog_slash(name="stop", description="中止所有播放(請小心使用)", guild_ids=guild_ids)
     async def stop(self, ctx):
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
         voice.stop()
     
-    @commands.command()
-    async def volume(self, ctx, vol:float):
-        volume = max(0.0, min(1.0, vol / 100))
+    @cog_ext.cog_slash(name="volume", description="改變音量(0~100)", options=[create_option(name="percentage", description="請輸入音量0~100", option_type=4, required=True)], guild_ids=guild_ids)
+    async def volume(self, ctx, percentage:float):
+        volume = max(0.0, min(1.0, percentage / 100))
 
         source = ctx.guild.voice_client.source
-
-        # if not isinstance(source, discord.PCMVolumeTransformer):
-        #     return await ctx.send("This source doesn't support adjusting volume or "
-        #                           "the interface to do so is not exposed.")
-
         source.volume = volume
 
-        await ctx.send(f"音量:{volume * 100:.2f}%")
+        await ctx.send(f"音量:{percentage:.2f}%")
 
 def setup(bot):
     bot.add_cog(Music(bot))

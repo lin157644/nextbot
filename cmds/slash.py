@@ -18,7 +18,6 @@ class Slash(Cog_Extension):
     
     @cog_ext.cog_slash(name="ping", description="This is just a test command, nothing more.", guild_ids=guild_ids)
     async def ping(self, ctx):
-        await ctx.respond()
         await ctx.send(f"Pong! ({self.bot.latency*1000}ms)")
     
     @cog_ext.cog_slash(name="test",
@@ -33,7 +32,6 @@ class Slash(Cog_Extension):
                 ],
                 guild_ids=guild_ids)
     async def test(self, ctx, optone: str='Nothing'):
-        await ctx.respond()
         await ctx.send(content=f"I got you, you said {optone}!")
     
     @cog_ext.cog_slash(name="say",
@@ -48,7 +46,6 @@ class Slash(Cog_Extension):
                 ],
                 guild_ids=guild_ids)
     async def say(self, ctx, context: str='什麼都沒有'):
-        await ctx.respond()
         await ctx.send(content=f" {context}")
 
 def setup(bot):

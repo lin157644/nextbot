@@ -1,6 +1,5 @@
 import datetime, json, random
 import discord
-from discord.embeds import Embed
 from discord.ext import commands
 from core.classes import Cog_Extension
 
@@ -55,12 +54,13 @@ class Main(Cog_Extension):
         await ctx.channel.purge(limit=num+1)
     
     @commands.command()
-    async def kick(self, ctx, msg):
+    async def kick(self, ctx, *, msg:str):
         # member = discord.utils.find(lambda m: m.name == ctx, self.channel.guild.members)
         if ctx.author == ctx.guild.owner:
           member = discord.utils.get(ctx.guild.members, name=msg)
           try:
-            await discord.Member.kick(member, reason='Test')
+            # await discord.Member.kick(member, reason='Test')
+            await member.move_to(None)
             await ctx.send(f'已處決『{msg}』')
           except:
               await ctx.send('Kick Fail QQ')
@@ -85,25 +85,25 @@ class Main(Cog_Extension):
         win = random.choice([0, 1, 2])
         if msg == '剪刀':
             if win == 0:
-                ctx.send(ctx.author.mention+'布 您贏了')
+                await ctx.send(ctx.author.mention+'布 您贏了')
             elif win == 1:
-                ctx.send(ctx.author.mention+'剪刀 平手')
+                await ctx.send(ctx.author.mention+'剪刀 平手')
             else:
-                ctx.send(ctx.author.mention+'石頭 您輸了')
+                await ctx.send(ctx.author.mention+'石頭 您輸了')
         if msg == '石頭':
             if win == 0:
-                ctx.send(ctx.author.mention+'剪刀 您贏了')
+                await ctx.send(ctx.author.mention+'剪刀 您贏了')
             elif win == 1:
-                ctx.send(ctx.author.mention+'石頭 平手')
+                await ctx.send(ctx.author.mention+'石頭 平手')
             else:
-                ctx.send(ctx.author.mention+'布 您輸了')
+                await ctx.send(ctx.author.mention+'布 您輸了')
         if msg == '布':
             if win == 0:
-                ctx.send(ctx.author.mention+'石頭 您贏了')
+                await ctx.send(ctx.author.mention+'石頭 您贏了')
             elif win == 1:
-                ctx.send(ctx.author.mention+'布 平手')
+                await ctx.send(ctx.author.mention+'布 平手')
             else:
-                ctx.send('剪刀 您輸了')
+                await ctx.send('剪刀 您輸了')
 
 #load_extension entry point
 def setup(bot):
