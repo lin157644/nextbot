@@ -1,111 +1,90 @@
+#Lavalink is dead
 import discord, datetime
 import os
+from discord.ext import commands
 import youtube_dl
+import asyncio
+import wavelink
 from core.classes import Cog_Extension
-from dotenv import load_dotenv
 from discord_slash import cog_ext
 from discord_slash.utils.manage_commands import create_option, create_choice
 
-load_dotenv()
-GUILD_ID=os.getenv('GUILD_ID')
+guild_ids = [231851662761918464]
 
-class Music(Cog_Extension):    
+class Player(wavelink.Player):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.tracks = []
 
-    guild_ids = [231851662761918464]
+    def add(self, track):
+        self.tracks.append(track)
+    
+    async def playQ(self):
+        while len(self.tracks) >= 1:
+            await self.play(self.tracks[0][0])
+            self.tracks.pop()
 
-    @cog_ext.cog_slash(name="play",
-        description="Play Music",
-        options=[
-        create_option(
-            name="platform",
-            description="請輸入要播放的平台",
-            option_type=4,
-            required=True,
-            choices=[
-                create_choice(
-                    name='Youtube',
-                    value=1
-                ),
-                create_choice(
-                    name='Pornhub',
-                    value=1
-                )
-            ]
-        ),
-        create_option(
-            name="url",
-            description="請輸入要播放的網址",
-            option_type=3,
-            required=True
-        )
-        ],
-        guild_ids=guild_ids)
-    async def play(self, ctx, url:str):
+class Music(Cog_Extension):
 
-        await ctx.defer()
+    def __init__(self, bot): 
+        self.bot = bot
 
-        # Connect to Current voice channel
-        voiceChannel = ctx.author.voice.channel     
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice == None:
-            await voiceChannel.connect()
-            voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if not hasattr(bot, 'wavelink'):
+            self.bot.wavelink = wavelink.Client(bot=self.bot)
 
-        # Downlaod info
-        ydl_opts = {'format' : 'bestaudio/best', 'get-thumbnail' : 'true'}
-        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            URL = info['formats'][0]['url']
+        self.bot.loop.create_task(self.start_nodes())
+
+    async def start_nodes(self):
+        await self.bot.wait_until_ready()
+
+        # Initiate our nodes. For this example we will use one server.
+        # Region should be a discord.py guild.region e.g sydney or us_central (Though this is not technically required)
+        await self.bot.wavelink.initiate_node(host='127.0.0.1',
+                                              port=2333,
+                                              rest_uri='http://127.0.0.1:2333',
+                                              password='aaaabbbb',
+                                              identifier='TEST',
+                                              region='hong_kong')
+    # Method Overloading in Python
+    # Retrieve a player for the given guild ID. If None, a player will be created and returned.
+    def get_player(self, obj):
+        if isinstance(obj, commands.Context):
+            return self.bot.wavelink.get_player(obj.guild.id, cls=Player)
+        elif isinstance(obj, discord.Guild):
+            return self.bot.wavelink.get_player(obj.id, cls=Player)
         
-        # Respond
-        try:
-            embed=discord.Embed(title="正在播放: \n"+info['title'], url="", color=0x575757, timestamp=datetime.datetime.now())
-            embed.set_thumbnail(url=info['thumbnails'][-1]['url'])
-            await ctx.send("", embed=embed)
-        except:
-            await ctx.send("Fail QQ")
 
-        # Play
-        voice.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)))
-    
-    @cog_ext.cog_slash(name="disconnect", description="讓機器人從當前的語音頻道中退出", guild_ids=guild_ids)
-    async def disconnect(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice.is_connected():
-            await voice.disconnect()
-        else:
-            await ctx.send("未連接至語音頻道")
-    
-    @cog_ext.cog_slash(name="pause", description="暫停當前播放的音樂", guild_ids=guild_ids)
-    async def pause(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice.is_playing():
-            voice.pause()
-        else:
-            await ctx.send("")
-    
-    @cog_ext.cog_slash(name="resume", description="繼續播放當前的音樂", guild_ids=guild_ids)
-    async def resume(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice.is_paused():
-            await voice.resume()
-        else:
-            await ctx.send("")
-    
-    @cog_ext.cog_slash(name="stop", description="中止所有播放(請小心使用)", guild_ids=guild_ids)
-    async def stop(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        voice.stop()
-    
-    @cog_ext.cog_slash(name="volume", description="改變音量(0~100)", options=[create_option(name="percentage", description="請輸入音量0~100", option_type=4, required=True)], guild_ids=guild_ids)
-    async def volume(self, ctx, percentage:float):
-        volume = max(0.0, min(1.0, percentage / 100))
+    @cog_ext.cog_slash(name="connent", description="連接至當前頻道", guild_ids=guild_ids)
+    async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
+        if not channel:
+            try:
+                channel = ctx.author.voice.channel
+            except AttributeError:
+                raise discord.DiscordException('No channel to join. Please either specify a valid channel or join one.')
+        # cls (Optional[class]) – An optional class to pass to build from, overriding the default Player class. This must be similar to Player. E.g a subclass.
+        player = self.get_player(ctx)
+        await ctx.send(f'Connecting to **`{channel.name}`**')
+        await player.connect(channel.id)
 
-        source = ctx.guild.voice_client.source
-        source.volume = volume
+    @cog_ext.cog_slash(name="play", description="播放", guild_ids=guild_ids)
+    async def play(self, ctx, *, query: str):
+        
+        newtrack = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
 
-        await ctx.send(f"音量:{percentage:.2f}%")
+        if not newtrack:
+            return await ctx.send('Could not find any songs with that query.')
+
+        player = self.get_player(ctx.guild)
+        if not player.is_connected:
+            try:
+                await player.connect(ctx.author.voice.channel.id)
+            except AttributeError:
+                raise discord.DiscordException('No channel to join. Please either specify a valid channel or join one.')
+            
+        player.add(newtrack)
+
+        await ctx.send(f'Added {str(newtrack[0])} to the queue.')
+        await player.playQ()
 
 def setup(bot):
     bot.add_cog(Music(bot))

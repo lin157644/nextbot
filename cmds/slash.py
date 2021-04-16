@@ -20,6 +20,11 @@ class Slash(Cog_Extension):
     async def ping(self, ctx):
         await ctx.send(f"Pong! ({self.bot.latency*1000}ms)")
     
+    @cog_ext.cog_slash(name="eval", description="請勿使用，你會把他弄壞", guild_ids=guild_ids)
+    async def ping(self, ctx, commands):
+        if ctx.author.id == 231851511704059904:
+            await ctx.send(eval(commands))
+
     @cog_ext.cog_slash(name="test",
                 description="This is just a test command, nothing more.",
                 options=[

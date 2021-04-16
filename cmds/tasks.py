@@ -58,13 +58,13 @@ class Task(Cog_Extension):
             await member.send('你是頑皮豹')
 
         for member in self.msGrayChannel.members:
-            if member.display_name != "格雷女士":
+            if member.display_name != "格雷女士" and not self.bot.user:
                 print(f'{member.display_name}不是格雷女士')
                 await member.move_to(None)
                 await member.send('你不是格雷女士')
 
         for member in self.channelPLA.members:
-            if member not in self.rolePLA.members:
+            if member not in self.rolePLA.members and not self.bot.user:
                 await member.move_to(None)
                 await member.send('你不是人民解放軍')
     
