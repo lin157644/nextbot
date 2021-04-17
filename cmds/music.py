@@ -8,6 +8,7 @@ import asyncio
 import wavelink
 from core.classes import Cog_Extension
 from discord_slash import cog_ext
+from discord_slash import context
 from discord_slash.utils.manage_commands import create_option, create_choice
 
 guild_ids = [231851662761918464]
@@ -46,6 +47,10 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
     @wavelink.WavelinkMixin.listener("on_track_end")
     async def on_player_stop(self, node, payload):
         await payload.player.advance()
+
+    @wavelink.WavelinkMixin.listener(event="on_node_ready")
+    async def node_ready_event(self, node):
+        print(f'Node {node.indentifier} ready!')
     
     async def start_nodes(self):
         await self.bot.wait_until_ready()
@@ -58,6 +63,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
                                               password='aaaabbbb',
                                               identifier='TEST',
                                               region='hong_kong')
+
     # Method Overloading in Python
     # Retrieve a player for the given guild ID. If None, a player will be created and returned.
     def get_player(self, obj):
@@ -65,10 +71,12 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
             return self.bot.wavelink.get_player(obj.guild.id, cls=Player)
         elif isinstance(obj, discord.Guild):
             return self.bot.wavelink.get_player(obj.id, cls=Player)
+        elif isinstance(obj, context.SlashContext):
+            return self.bot.wavelink.get_player(obj.guild.id, cls=Player)
         
 
     @cog_ext.cog_slash(name="connent", description="連接至當前頻道", guild_ids=guild_ids)
-    async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
+    async def connect_slash(self, ctx, *, channel: discord.VoiceChannel=None):
         if not channel:
             try:
                 channel = ctx.author.voice.channel
@@ -80,7 +88,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         await player.connect(channel.id)
 
     @cog_ext.cog_slash(name="play", description="播放", guild_ids=guild_ids)
-    async def play(self, ctx, *, query: str):
+    async def play_slash(self, ctx, *, query: str):
         
         newtracks = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
         
@@ -110,13 +118,55 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
             player.add(newtracks)
     
     @cog_ext.cog_slash(name="queue", description="播放", guild_ids=guild_ids)
-    async def queue(self, ctx):
+    async def queue_slash(self, ctx):
+        channel = None
+        if (channel := getattr(ctx.author.voice, "channel", channel)) is None:
+            await ctx.send("你不在頻道裡")
+        else:
+            channel = ctx.author.voice.channel
+        
+        player = self.get_player(ctx.guild)
+
+        if player.tracks:
+            output = ""
+            for index in range(len(player.tracks)):
+                output = output + ('正在播放:\n   ' if index==0 else f'{index}. ') + player.tracks[index].title + '\n'
+            await ctx.send(output)
+        else:
+            await ctx.send("佇列是空的")
+
+    @cog_ext.cog_slash(name="volume", description="更改音量", options=[create_option(name='amount', description='輸入音量0~100', option_type=4, required=True)], guild_ids=guild_ids)
+    async def volume_slash(self, ctx, amount):
         player = self.get_player(ctx)
-        output = ""
-        for song in player.tracks:
-            output = output + song.title
-        await ctx.send(output)
+        await player.set_volume(amount)
+        await ctx.send(f"音量:{amount}%")
+    
+    @cog_ext.cog_slash(name="pause", description="暫停", guild_ids=guild_ids)
+    async def pause_slash(self, ctx):
+        player = self.get_player(ctx)
+        await player.set_pause(not player.is_paused)
+        await ctx.send('已暫停' if player.is_paused else '已繼續播放')
 
-
+    @cog_ext.cog_slash(name="play", description="跳過", guild_ids=guild_ids)
+    async def play_slash(self, ctx):
+        player = self.get_player(ctx)
+        await player.advance()
+        await ctx.send('已跳過')
+    
+    @cog_ext.cog_slash(name="clear", description="清空佇列", guild_ids=guild_ids)
+    async def play_slash(self, ctx):
+        player = self.get_player(ctx)
+        await player.teacks.clear()
+        await ctx.send('已跳過')
+    
+    @cog_ext.cog_slash(name="disconnect", description="要機器人滾蛋", guild_ids=guild_ids)
+    async def disconnect_slash(self, ctx):
+        player = self.get_player(ctx)
+        try:
+            await player.destroy()
+            await ctx.send('**輕輕的我走了，正如我輕輕的來**')
+        except KeyError:
+            await ctx.send('◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣')
+        
 def setup(bot):
     bot.add_cog(Music(bot))

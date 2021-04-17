@@ -52,6 +52,42 @@ class Slash(Cog_Extension):
                 guild_ids=guild_ids)
     async def say(self, ctx, context: str='什麼都沒有'):
         await ctx.send(content=f" {context}")
+    
+    @cog_ext.cog_slash(name="tpall",
+                description="tp所有人",
+                options=[
+                create_option(
+                    name="channel",
+                    description="傳送座標",
+                    option_type=7,
+                    required=True
+                )
+                ],
+                guild_ids=guild_ids)
+    async def tpall_slash(self, ctx, channel):
+        if ctx.author.id != ctx.guild.owner.id:
+            return await ctx.send("你不行")
+        for ppl in ctx.author.voice.channel.members:
+            await ppl.move_to(channel)
+        await ctx.send("tp 成功")
+    
+    @cog_ext.cog_slash(name="watch",
+                description="你是變態吧",
+                options=[
+                create_option(
+                    name="cha",
+                    description="要偷窺的房間",
+                    option_type=7,
+                    required=True
+                )
+                ],
+                guild_ids=guild_ids)
+    async def watch_slash(self, ctx, cha):
+        output=""
+        for ppl in cha.members:
+            if ppl.activity != None:
+                output = output + ppl.display_name + ": " + ppl.activity.name + '\n'
+        await ctx.send(output)
 
 def setup(bot):
     bot.add_cog(Slash(bot))

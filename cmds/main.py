@@ -71,7 +71,7 @@ class Main(Cog_Extension):
         members = ctx.guild.members
         for ppl in members:
             await ppl.move_to(voice_channel)
-        await self.bot.move_member(members, voice_channel)
+        # await self.bot.move_member(members, voice_channel)
     
     @commands.command()
     async def ban(self, ctx, sinner:int):
