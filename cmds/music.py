@@ -154,7 +154,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         await ctx.send('已跳過')
     
     @cog_ext.cog_slash(name="clear", description="清空佇列", guild_ids=guild_ids)
-    async def play_slash(self, ctx):
+    async def clear_slash(self, ctx):
         player = self.get_player(ctx)
         await player.teacks.clear()
         await ctx.send('已跳過')
@@ -167,6 +167,12 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
             await ctx.send('**輕輕的我走了，正如我輕輕的來**')
         except KeyError:
             await ctx.send('◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣')
+    
+    @cog_ext.cog_slash(name="stop", description="終止播放", guild_ids=guild_ids)
+    async def stop_slash(self, ctx):
+        player = self.get_player(ctx)
+        await player.stop()
+        await ctx.send('**已終止**')
         
 def setup(bot):
     bot.add_cog(Music(bot))
