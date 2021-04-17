@@ -117,7 +117,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         else:
             player.add(newtracks)
     
-    @cog_ext.cog_slash(name="queue", description="播放", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="queue", description="顯示佇列", guild_ids=guild_ids)
     async def queue_slash(self, ctx):
         channel = None
         if (channel := getattr(ctx.author.voice, "channel", channel)) is None:
