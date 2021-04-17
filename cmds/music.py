@@ -1,6 +1,7 @@
 #Lavalink is dead
 import discord, datetime
 import os
+from discord import player
 from discord.ext import commands
 import youtube_dl
 import asyncio
@@ -20,11 +21,19 @@ class Player(wavelink.Player):
         self.tracks.append(track)
     
     async def playQ(self):
-        while len(self.tracks) >= 1:
-            await self.play(self.tracks[0][0])
-            self.tracks.pop()
+        await self.play(self.tracks[0])
+        print(self.tracks)
+    
+    async def advance(self):
+        if len(self.tracks) == 1:
+            self.tracks.pop(0)
+        elif len(self.tracks) > 1:
+            self.tracks.pop(0)
+            await self.play(self.tracks[0])
+        elif len(self.tracks) < 1:
+            pass
 
-class Music(Cog_Extension):
+class Music(Cog_Extension, wavelink.WavelinkMixin):
 
     def __init__(self, bot): 
         self.bot = bot
@@ -34,6 +43,10 @@ class Music(Cog_Extension):
 
         self.bot.loop.create_task(self.start_nodes())
 
+    @wavelink.WavelinkMixin.listener("on_track_end")
+    async def on_player_stop(self, node, payload):
+        await payload.player.advance()
+    
     async def start_nodes(self):
         await self.bot.wait_until_ready()
 
@@ -69,11 +82,16 @@ class Music(Cog_Extension):
     @cog_ext.cog_slash(name="play", description="播放", guild_ids=guild_ids)
     async def play(self, ctx, *, query: str):
         
-        newtrack = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
-
-        if not newtrack:
+        newtracks = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
+        
+        if not newtracks:
             return await ctx.send('Could not find any songs with that query.')
 
+        if isinstance(newtracks, wavelink.TrackPlaylist):
+            newtracks = newtracks.tracks[0]
+        else:
+            newtracks = newtracks[0]
+            
         player = self.get_player(ctx.guild)
         if not player.is_connected:
             try:
@@ -81,10 +99,24 @@ class Music(Cog_Extension):
             except AttributeError:
                 raise discord.DiscordException('No channel to join. Please either specify a valid channel or join one.')
             
-        player.add(newtrack)
+        
+        embed=discord.Embed(title="已加入佇列: \n"+newtracks.title, url="", color=0x575757, timestamp=datetime.datetime.now())
+        # embed.set_thumbnail(url=info['thumbnails'][-1]['url'])
+        await ctx.send("", embed=embed)
+        if len(player.tracks) == 0:
+            player.add(newtracks)
+            await player.playQ()
+        else:
+            player.add(newtracks)
+    
+    @cog_ext.cog_slash(name="queue", description="播放", guild_ids=guild_ids)
+    async def queue(self, ctx):
+        player = self.get_player(ctx)
+        output = ""
+        for song in player.tracks:
+            output = output + song.title
+        await ctx.send(output)
 
-        await ctx.send(f'Added {str(newtrack[0])} to the queue.')
-        await player.playQ()
 
 def setup(bot):
     bot.add_cog(Music(bot))
