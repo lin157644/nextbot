@@ -87,7 +87,10 @@ class Slash(Cog_Extension):
         for ppl in cha.members:
             if ppl.activity != None:
                 output = output + ppl.display_name + ": " + ppl.activity.name + '\n'
-        await ctx.send(output)
+        if output=="":
+            await ctx.send('大家都死了')
+        else:
+            await ctx.send(output)
 
 def setup(bot):
     bot.add_cog(Slash(bot))

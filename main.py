@@ -33,27 +33,27 @@ async def on_ready():
 
 @bot.command()
 async def load(ctx, extension):
-    bot.load_extension(f'cmds.{extension}')
+    bot.load_extension(f'cogs.{extension}')
     print(f'Extension {extension} Loaded!')
     await ctx.send(F'Extension {extension} Loaded!')
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'cmds.{extension}')
+    bot.unload_extension(f'cogs.{extension}')
     print(f'Extension {extension} Unloaded!')
     await ctx.send(F'Extension {extension} Unloaded!')
 
 @bot.command()
 async def reload(ctx, extension):
-    bot.reload_extension(f'cmds.{extension}')
+    bot.reload_extension(f'cogs.{extension}')
     print(f'Extension {extension} Reloaded!')
     await ctx.send(F'Extension {extension} Reloaded!')
 
 #Load Default Extension
-for filename in os.listdir('./cmds'):
+for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and not(filename.startswith('__')):
         #filename[:-3] 省略後三字 (.py)
-        bot.load_extension(f'cmds.{filename[:-3]}')
+        bot.load_extension(f'cogs.{filename[:-3]}')
         print(f'Imported {filename}!')
 
 #Inside Json, the arrengement of data is in the form of dictionary
