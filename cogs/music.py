@@ -147,7 +147,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         await player.set_pause(not player.is_paused)
         await ctx.send('已暫停' if player.is_paused else '已繼續播放')
 
-    @cog_ext.cog_slash(name="play", description="跳過", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="skip", description="跳過", guild_ids=guild_ids)
     async def play_slash(self, ctx):
         player = self.get_player(ctx)
         await player.advance()
