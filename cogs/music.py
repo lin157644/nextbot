@@ -89,7 +89,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
 
     @cog_ext.cog_slash(name="play", description="播放", guild_ids=guild_ids)
     async def play_slash(self, ctx, *, query: str):
-        
+        await ctx.defer()
         newtracks = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
         
         if not newtracks:
