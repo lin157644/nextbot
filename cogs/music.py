@@ -109,7 +109,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
             
         
         embed=discord.Embed(title="已加入佇列: \n"+newtracks.title, url="", color=0x575757, timestamp=datetime.datetime.now())
-        # embed.set_thumbnail(url=info['thumbnails'][-1]['url'])
+        embed.set_thumbnail(url=newtracks.thumb)
         await ctx.send("", embed=embed)
         if len(player.tracks) == 0:
             player.add(newtracks)
