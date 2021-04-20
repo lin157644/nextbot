@@ -17,7 +17,6 @@ class Player(wavelink.Player):
     
     async def playQ(self):
         await self.play(self.tracks[0])
-        print(self.tracks)
     
     async def advance(self):
         if len(self.tracks) == 1:
@@ -42,9 +41,9 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
     async def on_player_stop(self, node, payload):
         await payload.player.advance()
 
-    @wavelink.WavelinkMixin.listener(event="on_node_ready")
-    async def node_ready_event(self, node):
-        print(f'Node {node.indentifier} ready!')
+    @wavelink.WavelinkMixin.listener('on_node_ready')
+    async def on_node_ready(self, node: wavelink.Node):
+         print(f'Node {node.identifier} is ready!')
     
     async def start_nodes(self):
         await self.bot.wait_until_ready()
@@ -92,7 +91,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         else:
             newtracks = newtracks[0]
             
-        player = self.get_player(ctx.guild)
+        player = self.get_player(ctx)
         if not player.is_connected:
             try:
                 await player.connect(ctx.author.voice.channel.id)
