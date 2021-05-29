@@ -5,6 +5,8 @@ from .classes import Cog_Extension
 class Error(Cog_Extension):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, exception):
+        if hasattr(ctx.command, 'on_error'):
+            return
         if isinstance(exception, discord.ext.commands.CommandError):
             await ctx.send(f'指令不存在:\n{exception}')
         elif isinstance(exception, discord.ext.commands.MissingRequiredArgument):
