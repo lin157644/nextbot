@@ -5,7 +5,7 @@ from core.classes import Cog_Extension
 from dotenv import load_dotenv
 from discord_slash import cog_ext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import create_option, create_choice
 
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
@@ -91,6 +91,30 @@ class Slash(Cog_Extension):
             await ctx.send('大家都死了')
         else:
             await ctx.send(output)
+
+    @cog_ext.cog_slash(name="gamemode",
+                description="切換遊戲模式",
+                options=[
+                create_option(
+                    name="mode",
+                    description="遊戲模式",
+                    option_type=4,
+                    required=True,
+                    choices=[
+                        create_choice(name='survival', value=0),
+                        create_choice(name='creative', value=1),
+                        create_choice(name='adventure', value=2)
+                    ]
+                )
+                ],
+                guild_ids=guild_ids)
+    async def _gamemode(self, ctx, mode):
+        if(mode==0):
+            await ctx.send('生存模式')
+        elif(mode==1):
+            await ctx.send('創造模式')
+        elif(mode==2):
+            await ctx.send('冒險模式')
 
 def setup(bot):
     bot.add_cog(Slash(bot))

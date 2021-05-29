@@ -21,7 +21,7 @@ with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 #Build Entity
-bot = commands.Bot(command_prefix='$',intents = intents)
+bot = commands.Bot(command_prefix='[',intents = intents)
 slash = SlashCommand(bot, override_type = True, sync_commands=True)
 
 #Bot Ready
@@ -48,6 +48,9 @@ async def reload(ctx, extension):
     bot.reload_extension(f'cogs.{extension}')
     print(f'Extension {extension} Reloaded!')
     await ctx.send(F'Extension {extension} Reloaded!')
+
+#Load Error Handler
+bot.load_extension(f'core.error')
 
 #Load Default Extension
 for filename in os.listdir('./cogs'):

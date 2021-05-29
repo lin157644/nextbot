@@ -104,6 +104,21 @@ class Main(Cog_Extension):
                 await ctx.send(ctx.author.mention+'布 平手')
             else:
                 await ctx.send('剪刀 您輸了')
+    @commands.group(invoke_without_command=True)
+    async def ouo(self, ctx):
+        pass
+    @ouo.command()
+    async def 老皮(self, ctx):
+        await ctx.send('我不會打撞球')
+    @ouo.command()
+    async def 許君豪(self, ctx):
+        await ctx.send('這要怎麼打')
+    @ouo.command()
+    async def 林家昌(self, ctx):
+        await ctx.send('這就是個笑話')
+    @ouo.command()
+    async def 呂玹緯(self, ctx):
+        await ctx.send('簡育傑:我看到呂玹緯一次就扁一次')
 
 #load_extension entry point
 def setup(bot):

@@ -54,7 +54,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
                                               port=2333,
                                               rest_uri='http://127.0.0.1:2333',
                                               password='aaaabbbb',
-                                              identifier='TEST',
+                                              identifier='NextBot',
                                               region='hong_kong')
 
     # Method Overloading in Python
@@ -99,7 +99,8 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
                 raise discord.DiscordException('No channel to join. Please either specify a valid channel or join one.')
             
         
-        embed=discord.Embed(title="已加入佇列: \n"+newtracks.title, url="", color=0x575757, timestamp=datetime.datetime.now())
+        embed=discord.Embed(title="已加入佇列: \n"+newtracks.title, url=newtracks.uri, color=0x575757, timestamp=datetime.datetime.now())
+        embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
         embed.set_thumbnail(url=newtracks.thumb)
         await ctx.send("", embed=embed)
         if len(player.tracks) == 0:
