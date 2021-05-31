@@ -11,10 +11,10 @@ class Task(Cog_Extension):
         # self.printer.start()
 
         async def interval():
-            print('Waiting...')
+            print('Tasks Waiting...')
             await self.bot.wait_until_ready()
             self.channel = self.bot.get_channel(770144271503720469)
-            print('good')
+            print('Task Start')
             while not self.bot.is_closed():
                 # await self.channel.send(f'現在時間:{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                 await asyncio.sleep(10)

@@ -1,4 +1,4 @@
-import mariadb, sys, os
+import mariadb, sys
 
 class Database():
     def __init__(self, db_user, db_passwd):

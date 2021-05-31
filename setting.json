@@ -5,5 +5,6 @@
     "hi":["hey","hi2","hellO"],
     "ignore":[231851511704059904, 376687088705470464],
     "msgray":123,
-    "lavalink_path" : "C:\\Program Files\\AdoptOpenJDK\\jdk-13.0.2\\bin\\Lavalink.jar"
+    "lavalink_path" : "C:\\Program Files\\AdoptOpenJDK\\jdk-13.0.2\\bin\\Lavalink.jar",
+    "guild_id" : [231851662761918464, 803097307520303176]
 }

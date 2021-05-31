@@ -1,11 +1,15 @@
 import discord, datetime
 import wavelink
+import json
 from core.classes import Cog_Extension
 from discord_slash import cog_ext
 from discord_slash import context
 from discord_slash.utils.manage_commands import create_option, create_choice
+from dotenv import load_dotenv
 
-guild_ids = [231851662761918464]
+with open('setting.json', 'r', encoding='utf8') as jfile:
+    jdata = json.load(jfile)
+GUILD_ID=jdata['guild_id']
 
 class Player(wavelink.Player):
     def __init__(self, *args, **kwargs):
@@ -66,7 +70,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
             return self.bot.wavelink.get_player(obj.guild.id, cls=Player)
         
 
-    @cog_ext.cog_slash(name="connent", description="連接至當前頻道", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="connent", description="連接至當前頻道", guild_ids=GUILD_ID)
     async def connect_slash(self, ctx, *, channel: discord.VoiceChannel=None):
         if not channel:
             try:
@@ -78,7 +82,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         await ctx.send(f'Connecting to **`{channel.name}`**')
         await player.connect(channel.id)
 
-    @cog_ext.cog_slash(name="play", description="播放", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="play", description="播放", guild_ids=GUILD_ID)
     async def play_slash(self, ctx, *, query: str):
         await ctx.defer()
         newtracks = await self.bot.wavelink.get_tracks(f'ytsearch:{query}')
@@ -109,7 +113,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         else:
             player.add(newtracks)
     
-    @cog_ext.cog_slash(name="queue", description="顯示佇列", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="queue", description="顯示佇列", guild_ids=GUILD_ID)
     async def queue_slash(self, ctx):
         channel = None
         if (channel := getattr(ctx.author.voice, "channel", channel)) is None:
@@ -127,31 +131,31 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         else:
             await ctx.send("佇列是空的")
 
-    @cog_ext.cog_slash(name="volume", description="更改音量", options=[create_option(name='amount', description='輸入音量0~200(預設100)', option_type=4, required=True)], guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="volume", description="更改音量", options=[create_option(name='amount', description='輸入音量0~200(預設100)', option_type=4, required=True)], guild_ids=GUILD_ID)
     async def volume_slash(self, ctx, amount):
         player = self.get_player(ctx.guild)
         await player.set_volume(max(0,min(amount, 200)))
         await ctx.send(f'音量:{amount}%')
     
-    @cog_ext.cog_slash(name="pause", description="暫停", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="pause", description="暫停", guild_ids=GUILD_ID)
     async def pause_slash(self, ctx):
         player = self.get_player(ctx)
         await player.set_pause(not player.is_paused)
         await ctx.send('已暫停' if player.is_paused else '已繼續播放')
 
-    @cog_ext.cog_slash(name="skip", description="跳過", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="skip", description="跳過", guild_ids=GUILD_ID)
     async def skip_slash(self, ctx):
         player = self.get_player(ctx)
         await player.stop()
         await ctx.send('已跳過')
     
-    @cog_ext.cog_slash(name="clear", description="清空佇列", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="clear", description="清空佇列", guild_ids=GUILD_ID)
     async def clear_slash(self, ctx):
         player = self.get_player(ctx)
         player.tracks.clear()
         await ctx.send('已清空佇列')
     
-    @cog_ext.cog_slash(name="disconnect", description="要機器人滾蛋", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="disconnect", description="要機器人滾蛋", guild_ids=GUILD_ID)
     async def disconnect_slash(self, ctx):
         player = self.get_player(ctx)
         try:
@@ -160,7 +164,7 @@ class Music(Cog_Extension, wavelink.WavelinkMixin):
         except KeyError:
             await ctx.send('◢▆▅▄▃崩╰(〒皿〒)╯潰▃▄▅▇◣')
     
-    @cog_ext.cog_slash(name="stop", description="終止播放", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="stop", description="終止播放", guild_ids=GUILD_ID)
     async def stop_slash(self, ctx):
         player = self.get_player(ctx)
         player.tracks.clear()

@@ -1,26 +1,36 @@
-import json, random
-import discord
+import json
+from os import getenv
 from discord.ext import commands
+from core.database import Database
 from core.classes import Cog_Extension  
 
 with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 
 class Event(Cog_Extension):
-    
-    #bot.event 的Cog版
+
+    def __init__(self, bot):
+        super().__init__(bot)
+        db_user = getenv('DB_USER')
+        db_passwd = getenv('DB_PASSWORD')
+        self.db = Database(db_user, db_passwd)
+        self.db.cur.execute("USE nextbot;")
+
+    #bot.event w/ Cog
     @commands.Cog.listener()
-    async def on_member_join(self,member):
+    async def on_member_join(self, member):
         channel = self.bot.get_channel(int(jdata['Bot_channel']))
+        self.db.cur.execute("SELECT auto_role FROM guild_setting WHERE guild_id=?;",(member.guild.id,))
+        for auto_role in self.db.cur:
+            await member.add_roles(auto_role)
         await channel.send(f'{member} 加入了!')
         print(f'{member} Joined!')
 
-    #User Leaved
     @commands.Cog.listener()
-    async def on_member_remove(self,member):
+    async def on_member_remove(self, member):
         channel = self.bot.get_channel(int(jdata['Bot_channel']))
-        await channel.send(f'{member} Leaved...')
-        print(f"{member} Leaved...")
+        await channel.send(f'{member} 離開了...')
+        print(f"{member} 離開了...")
     
     @commands.Cog.listener()
     async def on_message(self, msg):
@@ -49,7 +59,16 @@ class Event(Cog_Extension):
               if keyword_count >= 9:
                 await msg.author.kick(reason='滿漢大餐珍味牛肉麵')
                 await msg.channel.send(f'已處決『{msg.author.name}』')
-
+    
+    @commands.Cog.listener()
+    async def on_message_delete(self, msg):
+        if msg.author != self.bot.user:
+            #await msg.channel.send(f"刪除訊息:{msg.content}")
+            print(f"刪除訊息:{msg.content}")
+    
+    @commands.Cog.listener()
+    async def on_slash_command(self, ctx):
+        pass
 
 def setup(bot):
     bot.add_cog(Event(bot))

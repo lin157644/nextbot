@@ -1,6 +1,6 @@
 from typing import Pattern
 import bitlyshortener
-import re
+import re, json
 from os import getenv
 from discord.ext import commands
 from discord_slash import cog_ext
@@ -9,8 +9,9 @@ from core.classes import Cog_Extension
 from dotenv import load_dotenv
 
 class ShourURL(Cog_Extension):
-    load_dotenv()
-    GUILD_ID=[int(getenv('GUILD_ID'))]
+    with open('setting.json', 'r', encoding='utf8') as jfile:
+        jdata = json.load(jfile)
+    GUILD_ID=jdata['guild_id']
     tokens_pool = ['1182b14ca4b313491d3643c897a868e7877d87ca']
     shortener = bitlyshortener.Shortener(tokens=tokens_pool, max_cache_size=256)
 

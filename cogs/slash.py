@@ -1,29 +1,29 @@
 import os, json
-import discord
 from discord.ext import commands
 from core.classes import Cog_Extension
 from dotenv import load_dotenv
 from discord_slash import cog_ext
-from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
 BOT_ID=os.getenv('PUBLIC_KEY')
-GUILD_ID=os.getenv('GUILD_ID')
-
+with open('setting.json', 'r', encoding='utf8') as jfile:
+    jdata = json.load(jfile)
+GUILD_ID=jdata['guild_id']
 class Slash(Cog_Extension):
 
-    guild_ids = [231851662761918464]
+    def has_move_member_permissions():
+        original = commands.has_guild_permissions(move_members=True).predicate
+        async def extended_check(ctx):
+            if ctx.guild is None:
+                return False
+            return ctx.guild.owner_id == ctx.author.id or await original(ctx)
+        return commands.check(extended_check)
     
-    @cog_ext.cog_slash(name="ping", description="This is just a test command, nothing more.", guild_ids=guild_ids)
+    @cog_ext.cog_slash(name="ping", description="This is just a test command, nothing more.", guild_ids=GUILD_ID)
     async def ping(self, ctx):
         await ctx.send(f"Pong! ({self.bot.latency*1000}ms)")
-    
-    @cog_ext.cog_slash(name="eval", description="請勿使用，你會把他弄壞", guild_ids=guild_ids)
-    async def ping(self, ctx, commands):
-        if ctx.author.id == 231851511704059904:
-            await ctx.send(eval(commands))
 
     @cog_ext.cog_slash(name="test",
                 description="This is just a test command, nothing more.",
@@ -35,7 +35,7 @@ class Slash(Cog_Extension):
                     required=False
                 )
                 ],
-                guild_ids=guild_ids)
+                guild_ids=GUILD_ID)
     async def test(self, ctx, optone: str='Nothing'):
         await ctx.send(content=f"I got you, you said {optone}!")
     
@@ -49,7 +49,7 @@ class Slash(Cog_Extension):
                     required=True
                 )
                 ],
-                guild_ids=guild_ids)
+                guild_ids=GUILD_ID)
     async def say(self, ctx, context: str='什麼都沒有'):
         await ctx.send(content=f" {context}")
     
@@ -63,10 +63,9 @@ class Slash(Cog_Extension):
                     required=True
                 )
                 ],
-                guild_ids=guild_ids)
+                guild_ids=GUILD_ID)
+    @has_move_member_permissions()
     async def tpall_slash(self, ctx, channel):
-        if ctx.author.id != ctx.guild.owner.id:
-            return await ctx.send("你不行")
         for ppl in ctx.author.voice.channel.members:
             await ppl.move_to(channel)
         await ctx.send("tp 成功")
@@ -81,7 +80,7 @@ class Slash(Cog_Extension):
                     required=True
                 )
                 ],
-                guild_ids=guild_ids)
+                guild_ids=GUILD_ID)
     async def watch_slash(self, ctx, cha):
         output=""
         for ppl in cha.members:
@@ -107,7 +106,7 @@ class Slash(Cog_Extension):
                     ]
                 )
                 ],
-                guild_ids=guild_ids)
+                guild_ids=GUILD_ID)
     async def _gamemode(self, ctx, mode):
         if(mode==0):
             await ctx.send('生存模式')

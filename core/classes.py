@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands
 
 #Cog_Extension 繼承 commands.cog的類別
