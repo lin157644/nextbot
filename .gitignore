@@ -2,3 +2,5 @@
 *.pyc
 song.mp3
 *.old
+application.yml
+logs

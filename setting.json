@@ -4,5 +4,6 @@
     "urlpic":"https://i.ytimg.com/vi/P0a7o5hK_Ig/hqdefault.jpg?sqp=-oaymwEYCKgBEF5IVfKriqkDCwgBFQAAiEIYAXAB&rs=AOn4CLBRS_4gfw95zN50PNLq9yj10YK6rw",
     "hi":["hey","hi2","hellO"],
     "ignore":[231851511704059904, 376687088705470464],
-    "msgray":123
+    "msgray":123,
+    "lavalink_path" : "C:\\Program Files\\AdoptOpenJDK\\jdk-13.0.2\\bin\\Lavalink.jar"
 }

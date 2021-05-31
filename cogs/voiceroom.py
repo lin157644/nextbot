@@ -45,19 +45,18 @@ class VoiceRoom(Cog_Extension):
         self.rooms.append(Room(vc, datetime.now(), ctx.author))
         await ctx.send("Room Created")
     
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(minutes=1.0)
     async def expireChecker(self):
         print('Cheaking Rooms')
         for index in reversed(range(len(self.rooms))):
             room = self.rooms[index]
-            if room.create_time + timedelta(seconds=30) < datetime.now():
+            if room.create_time + timedelta(hours=1) < datetime.now():
                 print(f'Channel {room.voiceChannel.name} Deleted')
                 await room.voiceChannel.delete()
                 self.rooms.pop(index)
 
     @expireChecker.before_loop
     async def before_expireChecker(self):
-        # print('Waiting...')
         await self.bot.wait_until_ready()
 
     def cog_unload(self):

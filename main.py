@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashCommand
 from dotenv import load_dotenv
+from subprocess import Popen
 
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
@@ -51,7 +52,8 @@ async def reload(ctx, extension):
 
 #Load Error Handler
 bot.load_extension(f'core.error')
-
+# os.system(f'java -jar "{jdata["lavalink_path"]}\\Lavalink.jar"')
+Popen(['java', '-jar', f'{jdata["lavalink_path"]}' ])
 #Load Default Extension
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and not(filename.startswith('__')):
