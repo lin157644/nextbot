@@ -64,7 +64,7 @@ class Event(Cog_Extension):
     async def on_message_delete(self, msg):
         if msg.author != self.bot.user:
             #await msg.channel.send(f"刪除訊息:{msg.content}")
-            print(f"刪除訊息:{msg.content}")
+            print(f"刪除{msg.author}之訊息:{msg.content}")
     
     @commands.Cog.listener()
     async def on_slash_command(self, ctx):

@@ -34,7 +34,9 @@ class ShourURL(Cog_Extension):
             if longurl != None and self.shortener.usage() < 0.7:
                 try:
                     # await msg.channel.send(longurl.group())
-                    await msg.channel.send(self.shortener.shorten_urls([longurl.group()])[0])
+                    if len(longurl.group()) > 150 and len(msg.content)==len(longurl.group()) :
+                        await msg.channel.send(self.shortener.shorten_urls([longurl.group()])[0])
+                        await msg.delete()
                 except Exception  as e:
                     print(e)
 

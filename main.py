@@ -2,6 +2,7 @@
 import json
 import os
 import discord
+import logging
 from discord.ext import commands
 from discord_slash import SlashCommand
 from dotenv import load_dotenv
@@ -11,17 +12,23 @@ from discord_components import DiscordComponents
 load_dotenv()
 TOKEN=os.getenv('DISCORD_TOKEN')
 BOT_ID=os.getenv('PUBLIC_KEY')
-
 BOT_PUBLIC_KEY = os.getenv('PUBLIC_KEY')
-
-#Discord.py 1.5 新增Intents selective receive event
-#https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
-intents = discord.Intents.all()
 
 #('File name', 'mode', encoding)
 with open('setting.json', 'r', encoding='utf8') as jfile:
     jdata = json.load(jfile)
 GUILD_ID=jdata['guild_id']
+
+if jdata['log']:
+    logger = logging.getLogger('discord')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename='./logs/discord.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
+
+#Discord.py 1.5 新增Intents selective receive event
+#https://discordpy.readthedocs.io/en/latest/intents.html#member-intent
+intents = discord.Intents.all()
 
 #Build Entity
 bot = commands.Bot(command_prefix='[',intents = intents)
@@ -58,7 +65,7 @@ async def _reload(ctx, extension):
 
 #Load Error Handler
 bot.load_extension(f'core.error')
-# os.system(f'java -jar "{jdata["lavalink_path"]}\\Lavalink.jar"')
+#Start lavalink
 Popen(['java', '-jar', f'{jdata["lavalink_path"]}' ])
 #Load Default Extension
 for filename in os.listdir('./cogs'):

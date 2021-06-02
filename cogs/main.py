@@ -14,14 +14,14 @@ class Main(Cog_Extension):
     
     @commands.command()
     async def embedtest(self, ctx):
-        embed=discord.Embed(title="123", url="http://url.test", color=0x575757, timestamp=datetime.datetime.now())
-        embed.set_author(name="author name ", url="https://author-link.test", icon_url="https://author-icon.test")
-        embed.set_thumbnail(url="http://icon.test")
+        embed=discord.Embed(title="NextBotDev", url="https://i.imgur.com/ThSZyyL.png", color=0x575757, timestamp=datetime.datetime.now())
+        embed.set_author(name="NextBotDev ", url="https://i.imgur.com/ThSZyyL.png", icon_url="https://i.imgur.com/ThSZyyL.png")
+        embed.set_thumbnail(url="https://i.imgur.com/ThSZyyL.png")
         embed.add_field(name="Fields1-name", value="value1", inline=True)
         embed.add_field(name="Fields2-name", value="value2", inline=True)
         embed.add_field(name="Fields3-name", value="value3", inline=True)
         embed.add_field(name="Fields4-name", value="value4", inline=True)
-        embed.set_footer(text="Footer-Text")
+        embed.set_footer(text="lin157644#1337")
         await ctx.send(embed=embed)
     
     @commands.command()

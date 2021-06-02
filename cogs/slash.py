@@ -114,6 +114,21 @@ class Slash(Cog_Extension):
             await ctx.send('創造模式')
         elif(mode==2):
             await ctx.send('冒險模式')
+    
+    @cog_ext.cog_slash(name="purge",
+                description="清除訊息",
+                options=[
+                create_option(
+                    name="amount",
+                    description="amount to purge",
+                    option_type=4,
+                    required=True
+                )
+                ],
+                guild_ids=GUILD_ID)
+    async def _purge(self, ctx, amount:int):
+        await ctx.send("Start purging.")
+        await ctx.channel.purge(limit=amount+1)
 
 def setup(bot):
     bot.add_cog(Slash(bot))
