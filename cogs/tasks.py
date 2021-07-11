@@ -8,7 +8,7 @@ class Task(Cog_Extension):
         # 父類別.初始化屬性
         super().__init__(*args, **kwargs)
         # self.index = 0
-        # self.printer.start()
+        
 
         async def interval():
             print('Tasks Waiting...')
@@ -18,8 +18,9 @@ class Task(Cog_Extension):
             while not self.bot.is_closed():
                 # await self.channel.send(f'現在時間:{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
                 await asyncio.sleep(10)
-
+        self.isSigned = True
         self.bg_task = self.bot.loop.create_task(interval())
+        self.sign_task.start()
         self.remove_idle.start()
 
     @commands.command()
@@ -76,7 +77,29 @@ class Task(Cog_Extension):
         self.msGrayChannel = self.bot.get_channel(263005171049562112)
         self.channelPLA = self.bot.get_channel(551417617471111198)
         self.rolePLA = self.ouoserver.get_role(263001618579062795)
+    
 
 
+    @tasks.loop(hours=1.0)
+    async def sign_task(self):
+        channel = self.bot.get_guild(231851662761918464).get_channel(248822934460694528)
+        await channel.send(f'{self.ouoserver.get_member(376687088705470464).mention} 用 [sign 簽到')
+        self.isSigned = False
+        await asyncio.sleep(180)
+        if self.isSigned == False:
+            await self.ouoserver.get_member(376687088705470464).send("你沒有簽到")
+            await self.ouoserver.get_member(376687088705470464).kick()
+
+    @sign_task.before_loop
+    async def before_remove_idle(self):
+        await self.bot.wait_until_ready()
+
+    @commands.command()
+    async def sign(self, ctx):
+        if self.isSigned == False and ctx.author == self.ouoserver.get_member(376687088705470464):
+            self.isSigned = True
+            await ctx.send("已簽到")
+        
+        
 def setup(bot):
     bot.add_cog(Task(bot))

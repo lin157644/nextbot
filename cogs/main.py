@@ -120,6 +120,10 @@ class Main(Cog_Extension):
     async def 呂玹緯(self, ctx):
         await ctx.send('簡育傑:我看到呂玹緯一次就扁一次')
 
+    @commands.command()
+    async def emoji(self, ctx, msg):
+        print(msg)
+
 #load_extension entry point
 def setup(bot):
     bot.add_cog(Main(bot))
